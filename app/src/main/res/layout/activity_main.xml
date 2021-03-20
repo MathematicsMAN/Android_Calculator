@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     tools:background="@android:color/holo_orange_dark">
 
-    <include layout="@layout/activity_main_constraint"/>
+    <include layout="@layout/activity_main_calculator"/>
 
 
 </FrameLayout>
