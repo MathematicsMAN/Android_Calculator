@@ -9,13 +9,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Android_Calculator">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivityLessons">
+<!--           Чтоб экран не поворачивался:
+                android:screenOrientation="portrait" - это старый параметр
+                android:configChanges="orientation|screenSize" - вариант хороший, но не очень.
+                        Здесь Layout будет использоваться тот же самый, не надо его пересоздавать
+-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MainActivityLessons_2"/>
+        <activity android:name=".MainActivity"/>
     </application>
 
 </manifest>
