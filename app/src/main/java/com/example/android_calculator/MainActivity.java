@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -12,11 +13,11 @@ public class MainActivity extends AppCompatActivity {
 
     TextView textView;
     private Calculator calculator = new Calculator();
-    private final int lengthOfTextView = 12;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
 
         Button button1 = findViewById(R.id.button_num1);
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         Button button_equal = findViewById(R.id.button_equal);
         Button button_plus = findViewById(R.id.button_plus);
         Button button_minus = findViewById(R.id.button_minus);
-        Button button_multiple = findViewById(R.id.button_multiply);
+        Button button_multiply = findViewById(R.id.button_multiply);
         Button button_division = findViewById(R.id.button_division);
         Button button_canceled = findViewById(R.id.button_cancel);
         textView = findViewById(R.id.textView_display);
@@ -84,15 +85,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
         button_plus.setOnClickListener(v -> {
-            calculator.choiceAction(Calculator.Action.Division);
+            calculator.choiceAction(Calculator.Action.Plus);
         });
 
         button_minus.setOnClickListener(v -> {
-            calculator.choiceAction(Calculator.Action.Division);
+            calculator.choiceAction(Calculator.Action.Minus);
         });
 
-        button_multiple.setOnClickListener(v -> {
-            calculator.choiceAction(Calculator.Action.Division);
+        button_multiply.setOnClickListener(v -> {
+            calculator.choiceAction(Calculator.Action.Multiply);
         });
 
         button_division.setOnClickListener(v -> {
@@ -103,11 +104,10 @@ public class MainActivity extends AppCompatActivity {
             try {
                 calculator.choiceEqual();
                 refreshTextView();
-            }
-            catch (ArithmeticException e) {
-                Log.e("Calculator",e.getMessage());
+            } catch (ArithmeticException e) {
+                Log.e("Calculator", e.getMessage());
                 calculator.choiceCancel();
-                textView.setText("Err:Div 0!");
+                textView.setText("Error!");
             }
         });
 
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void refreshTextView() {
-        textView.setText(calculator.getOperator1InTextView(lengthOfTextView));
+        textView.setText(calculator.getOperator1());
     }
 
     @Override
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("CALCULATOR",calculator);
+        outState.putSerializable("CALCULATOR", calculator);
     }
 
 }
