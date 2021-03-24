@@ -7,6 +7,7 @@ public class Calculator implements Serializable {
     private final String dot = ".";
     private String operator1;
     private String operator2;
+    private String operator1ToView;
 
     private enum LastChoice {
         Equal,
@@ -27,10 +28,15 @@ public class Calculator implements Serializable {
     private Action currentAction;
 
     public Calculator() {
+        choiceCancel();
+    }
+
+    public void choiceCancel() {
         operator1 = "0";
         operator2 = null;
         currentAction = null;
         lastChoice = null;
+        operator1ToView = null;
     }
 
     public void choiceNumber(int num) {
@@ -40,6 +46,7 @@ public class Calculator implements Serializable {
 
         if (lastChoice == LastChoice.Equal) {
             operator1 = "0";
+            operator2 = null;
         }
 
         if (!"0".equals(operator1)) {
@@ -52,10 +59,16 @@ public class Calculator implements Serializable {
     }
 
     public void choiceAction(Action action) {
+        if (operator2 != null && lastChoice == LastChoice.Number) {
+            choiceEqual();
+            operator2 = null;
+            operator1ToView = compression(operator1);
+        }
         currentAction = action;
         if (lastChoice != LastChoice.Action) {
             operator2 = operator1;
             operator1 = "0";
+            operator1ToView = compression(operator2);
             lastChoice = LastChoice.Action;
         }
     }
@@ -81,7 +94,7 @@ public class Calculator implements Serializable {
                 break;
             }
             case Minus: {
-                op1 = op2 - op1;
+                op1 = lastChoice == LastChoice.Equal ? (op1 - op2) : (op2 - op1);
                 break;
             }
             case Multiply: {
@@ -89,9 +102,9 @@ public class Calculator implements Serializable {
                 break;
             }
             case Division: {
-                if (op1 != 0) {
-                    op1 = op2 / op1;
-                } else {
+                try {
+                    op1 = lastChoice == LastChoice.Equal ? (op1 / op2) : (op2 / op1);
+                } catch (ArithmeticException ex) {
                     throw new ArithmeticException("Division by zero/Деление на 0");
                 }
                 break;
@@ -106,30 +119,37 @@ public class Calculator implements Serializable {
         lastChoice = LastChoice.Equal;
     }
 
-    public void choiceCancel() {
-        operator1 = "0";
-        operator2 = null;
-        currentAction = null;
-        lastChoice = null;
-    }
-
     public void choiceDot() {
-        if (!operator1.contains(dot)) {
+        if (lastChoice == LastChoice.Equal || lastChoice == LastChoice.Action) {
+            operator1 = "0".concat(dot);
+            lastChoice = LastChoice.Dot;
+        } else if (!operator1.contains(dot)) {
             operator1 = operator1.concat(dot);
             lastChoice = LastChoice.Dot;
         }
     }
 
     public String getOperator1() {
+        String result;
+        if (operator1ToView != null) {
+            result = operator1ToView;
+            operator1ToView = null;
+        } else {
+            result = operator1 = compression(operator1);
+        }
+        return result;
+    }
+
+    private String compression(String doubleNumberFormat) {
         StringBuffer result;
 
-        if (operator1.length() < maximumLengthOperatorSymbols) {
-            result = new StringBuffer(operator1);
+        if (doubleNumberFormat.length() < maximumLengthOperatorSymbols) {
+            result = new StringBuffer(doubleNumberFormat);
         } else {
-            result = new StringBuffer(operator1.substring(0, maximumLengthOperatorSymbols));
+            result = new StringBuffer(doubleNumberFormat.substring(0, maximumLengthOperatorSymbols));
         }
 
-        if (operator1.contains(dot)) {
+        if (doubleNumberFormat.contains(dot)) {
             while (result.charAt(result.length() - 1) == '0' && lastChoice != LastChoice.Number) {
                 result.delete(result.length() - 1, result.length());
             }
@@ -138,6 +158,6 @@ public class Calculator implements Serializable {
             }
         }
 
-        return operator1 = result.toString();
+        return result.toString();
     }
 }
