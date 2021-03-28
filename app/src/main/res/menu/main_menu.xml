@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/menu_choice_theme"
+        android:icon="@android:drawable/stat_notify_sync"
+        android:title="@string/choice_theme"
+        app:showAsAction="ifRoom|withText" />
+
+    <item android:id="@+id/menu_exit"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:title="@string/exit_activity"
+        app:showAsAction="ifRoom|withText" />
+
+</menu>

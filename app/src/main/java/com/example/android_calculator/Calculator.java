@@ -9,26 +9,15 @@ public class Calculator implements Serializable {
     private String operator2;
     private String operator1ToView;
 
-    private enum LastChoice {
-        Equal,
-        Dot,
-        Number,
-        Action
-    }
-
     private LastChoice lastChoice;
-
-    protected enum Action {
-        Plus,
-        Minus,
-        Multiply,
-        Division
-    }
-
     private Action currentAction;
 
     public Calculator() {
         choiceCancel();
+    }
+
+    public void setOperator1(String operator1) {
+        this.operator1 = operator1;
     }
 
     public void choiceCancel() {
@@ -44,7 +33,7 @@ public class Calculator implements Serializable {
             return;
         }
 
-        if (lastChoice == LastChoice.Equal) {
+        if (lastChoice == LastChoice.EQUAL) {
             operator1 = "0";
             operator2 = null;
         }
@@ -55,21 +44,21 @@ public class Calculator implements Serializable {
             operator1 = Integer.toString(num);
         }
 
-        lastChoice = LastChoice.Number;
+        lastChoice = LastChoice.NUMBER;
     }
 
     public void choiceAction(Action action) {
-        if (operator2 != null && lastChoice == LastChoice.Number) {
+        if (operator2 != null && lastChoice == LastChoice.NUMBER) {
             choiceEqual();
             operator2 = null;
             operator1ToView = compression(operator1);
         }
         currentAction = action;
-        if (lastChoice != LastChoice.Action) {
+        if (lastChoice != LastChoice.ACTION) {
             operator2 = operator1;
             operator1 = "0";
             operator1ToView = compression(operator2);
-            lastChoice = LastChoice.Action;
+            lastChoice = LastChoice.ACTION;
         }
     }
 
@@ -77,33 +66,38 @@ public class Calculator implements Serializable {
         double op1;
         double op2;
 
-        if (operator2 != null) {
-            if (lastChoice == LastChoice.Action) {
-                op1 = op2 = Double.parseDouble(operator2);
+        try {
+            if (operator2 != null) {
+                if (lastChoice == LastChoice.ACTION) {
+                    op1 = op2 = Double.parseDouble(operator2);
+                } else {
+                    op1 = Double.parseDouble(operator1);
+                    op2 = Double.parseDouble(operator2);
+                }
             } else {
-                op1 = Double.parseDouble(operator1);
-                op2 = Double.parseDouble(operator2);
+                return;
             }
-        } else {
-            return;
+        } catch (NullPointerException | NumberFormatException  ex){
+            throw new ArithmeticException("Division by zero/Деление на 0");
+
         }
 
         switch (currentAction) {
-            case Plus: {
+            case PLUS: {
                 op1 += op2;
                 break;
             }
-            case Minus: {
-                op1 = lastChoice == LastChoice.Equal ? (op1 - op2) : (op2 - op1);
+            case MINUS: {
+                op1 = lastChoice == LastChoice.EQUAL ? (op1 - op2) : (op2 - op1);
                 break;
             }
-            case Multiply: {
+            case MULTIPLY: {
                 op1 *= op2;
                 break;
             }
-            case Division: {
+            case DIVISION: {
                 try {
-                    op1 = lastChoice == LastChoice.Equal ? (op1 / op2) : (op2 / op1);
+                    op1 = lastChoice == LastChoice.EQUAL ? (op1 / op2) : (op2 / op1);
                 } catch (ArithmeticException ex) {
                     throw new ArithmeticException("Division by zero/Деление на 0");
                 }
@@ -116,16 +110,16 @@ public class Calculator implements Serializable {
         }
 
         operator1 = String.format("%.10f", op1).replace(',', dot.charAt(0));
-        lastChoice = LastChoice.Equal;
+        lastChoice = LastChoice.EQUAL;
     }
 
     public void choiceDot() {
-        if (lastChoice == LastChoice.Equal || lastChoice == LastChoice.Action) {
+        if (lastChoice == LastChoice.EQUAL || lastChoice == LastChoice.ACTION) {
             operator1 = "0".concat(dot);
-            lastChoice = LastChoice.Dot;
+            lastChoice = LastChoice.DOT;
         } else if (!operator1.contains(dot)) {
             operator1 = operator1.concat(dot);
-            lastChoice = LastChoice.Dot;
+            lastChoice = LastChoice.DOT;
         }
     }
 
@@ -150,14 +144,28 @@ public class Calculator implements Serializable {
         }
 
         if (doubleNumberFormat.contains(dot)) {
-            while (result.charAt(result.length() - 1) == '0' && lastChoice != LastChoice.Number) {
+            while (result.charAt(result.length() - 1) == '0' && lastChoice != LastChoice.NUMBER) {
                 result.delete(result.length() - 1, result.length());
             }
-            if (dot.equals(String.valueOf(result.charAt(result.length() - 1))) && lastChoice != LastChoice.Dot) {
+            if (dot.equals(String.valueOf(result.charAt(result.length() - 1))) && lastChoice != LastChoice.DOT) {
                 result.delete(result.length() - 1, result.length());
             }
         }
 
         return result.toString();
+    }
+
+    private enum LastChoice {
+        EQUAL,
+        DOT,
+        NUMBER,
+        ACTION
+    }
+
+    protected enum Action {
+        PLUS,
+        MINUS,
+        MULTIPLY,
+        DIVISION
     }
 }

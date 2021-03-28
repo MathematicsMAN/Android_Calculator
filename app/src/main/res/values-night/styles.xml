@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="button_style">
+    <style name="button_style" parent="AppThemeDark">
         <item name="android:layout_width">@dimen/button_width</item>
         <item name="android:layout_height">@dimen/button_height</item>
         <item name="android:layout_margin">@dimen/button_margin</item>
@@ -15,7 +15,7 @@
 
     <style name="button_cancel_style" parent="button_style" />
 
-    <style name="textView_style">
+    <style name="textView_style" parent="AppThemeDark">
         <item name="android:layout_width">@dimen/text_width</item>
         <item name="android:layout_height">@dimen/button_height</item>
         <item name="android:layout_marginStart">@dimen/text_margin</item>
@@ -25,5 +25,7 @@
         <item name="android:fontFamily">cursive</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
+
+    <style name="AppThemeDark" parent="Theme.MaterialComponents"/>
 
 </resources>

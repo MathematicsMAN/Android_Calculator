@@ -1,23 +1,36 @@
 package com.example.android_calculator;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
     private final String KEY_CALCULATOR = "CALCULATOR";
+    private static final int REQUEST_CODE_SETTING_ACTIVITY = 99;
+    private static final String NameSharedPreference = "LOGIN";
+    private static final String appTheme = "APP_THEME";
+    private final static String FIRST_OPERATOR = "OPERATOR1";
 
     TextView textView;
     private Calculator calculator = new Calculator();
+    ActionBar actionBar = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(getAppTheme(R.style.AppThemeLight));
         setContentView(R.layout.activity_main);
 
         textView = findViewById(R.id.textView_display);
@@ -41,23 +54,14 @@ public class MainActivity extends AppCompatActivity {
         Button button_canceled = findViewById(R.id.button_cancel);
 
         button0.setOnClickListener(v -> pressNumberButton(0));
-
         button1.setOnClickListener(v -> pressNumberButton(1));
-
         button2.setOnClickListener(v -> pressNumberButton(2));
-
         button3.setOnClickListener(v -> pressNumberButton(3));
-
         button4.setOnClickListener(v -> pressNumberButton(4));
-
         button5.setOnClickListener(v -> pressNumberButton(5));
-
         button6.setOnClickListener(v -> pressNumberButton(6));
-
         button7.setOnClickListener(v -> pressNumberButton(7));
-
         button8.setOnClickListener(v -> pressNumberButton(8));
-
         button9.setOnClickListener(v -> pressNumberButton(9));
 
         button_dot.setOnClickListener(v -> {
@@ -66,22 +70,22 @@ public class MainActivity extends AppCompatActivity {
         });
 
         button_plus.setOnClickListener(v -> {
-            calculator.choiceAction(Calculator.Action.Plus);
+            calculator.choiceAction(Calculator.Action.PLUS);
             refreshTextView();
         });
 
         button_minus.setOnClickListener(v -> {
-            calculator.choiceAction(Calculator.Action.Minus);
+            calculator.choiceAction(Calculator.Action.MINUS);
             refreshTextView();
         });
 
         button_multiply.setOnClickListener(v -> {
-            calculator.choiceAction(Calculator.Action.Multiply);
+            calculator.choiceAction(Calculator.Action.MULTIPLY);
             refreshTextView();
         });
 
         button_division.setOnClickListener(v -> {
-            calculator.choiceAction(Calculator.Action.Division);
+            calculator.choiceAction(Calculator.Action.DIVISION);
             refreshTextView();
         });
 
@@ -93,6 +97,10 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("Calculator", e.getMessage());
                 calculator.choiceCancel();
                 textView.setText(R.string.error_message);
+            } catch (NullPointerException | NumberFormatException e) {
+                Log.e("Calculator", e.getMessage());
+                calculator.choiceCancel();
+                textView.setText(R.string.error_type_mismatch);
             }
         });
 
@@ -100,6 +108,24 @@ public class MainActivity extends AppCompatActivity {
             calculator.choiceCancel();
             refreshTextView();
         });
+
+        actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setDisplayUseLogoEnabled(true);
+            actionBar.setTitle(R.string.title_menu);
+            actionBar.show();
+        }
+
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        if (bundle == null) {
+            return;
+        }
+
+        String operator1 = bundle.getString(FIRST_OPERATOR);
+        calculator.setOperator1(operator1);
+        refreshTextView();
     }
 
     private void pressNumberButton(int n) {
@@ -124,4 +150,70 @@ public class MainActivity extends AppCompatActivity {
         outState.putSerializable(KEY_CALCULATOR, calculator);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+
+        switch (itemId) {
+            case R.id.menu_choice_theme:
+                Intent intent = new Intent(this, ChoiceThemeActivity.class);
+                startActivityForResult(intent, REQUEST_CODE_SETTING_ACTIVITY);
+                break;
+            case R.id.menu_exit:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode != REQUEST_CODE_SETTING_ACTIVITY) {
+            super.onActivityResult(requestCode, resultCode, data);
+            return;
+        }
+
+        int codeStyle = 0;
+        if (data != null) {
+            codeStyle = data.getIntExtra(ChoiceThemeActivity.CODE_STYLE, 0);
+        }
+
+        if (resultCode == RESULT_OK) {
+            setAppTheme(codeStyle);
+            recreate();
+        }
+    }
+
+    private void setAppTheme(int codeStyle) {
+        SharedPreferences sharedPref = getSharedPreferences(NameSharedPreference, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(appTheme, codeStyle);
+        editor.apply();
+    }
+
+    private int getAppTheme(int codeStyle) {
+        return codeStyleToStyleId(getCodeStyle(codeStyle));
+    }
+
+    private int getCodeStyle(int codeStyle) {
+        SharedPreferences sharedPref = getSharedPreferences(NameSharedPreference, MODE_PRIVATE);
+        return sharedPref.getInt(appTheme, codeStyle);
+    }
+
+    private int codeStyleToStyleId(int codeStyle) {
+        switch (codeStyle) {
+            case ChoiceThemeActivity.AppThemeLightCodeStyle:
+                return R.style.AppThemeLight;
+            case ChoiceThemeActivity.AppThemeDarkCodeStyle:
+                return R.style.AppThemeDark;
+        }
+        return R.style.AppThemeLight;
+    }
 }
