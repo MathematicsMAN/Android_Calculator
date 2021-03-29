@@ -18,5 +18,13 @@
     <string name="division" translatable="false">/</string>
     <string name="cancel" translatable="false">C</string>
     <string name="counters">Counters</string>
-    <string name="error_message">Error!</string>
+    <string name="error_message">ArithmeticError!</string>
+    <string name="error_type_mismatch">TypeMismatch!</string>
+    <string name="exit_activity">Close</string>
+    <string name="title_menu">Calculator</string>
+    <string name="material_light">Light Theme</string>
+    <string name="material_dark">Dark Theme</string>
+    <string name="edit_text_title">Choose theme for calculator</string>
+    <string name="button_return_back">Return back</string>
+    <string name="choice_theme">Choice Theme</string>
 </resources>

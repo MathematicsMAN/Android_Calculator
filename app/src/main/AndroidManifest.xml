@@ -9,12 +9,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Android_Calculator">
+        <activity android:name=".ChoiceThemeActivity"></activity>
         <activity android:name=".MainActivity">
-<!--            android:screenOrientation="landscape">-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter android:label="com.example.android_calculator.MainActivity">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.APP_CALCULATOR" />
+
+                <data
+                    android:host="intent"
+                    android:scheme="calculator" />
+            </intent-filter>
         </activity>
     </application>
+
 </manifest>

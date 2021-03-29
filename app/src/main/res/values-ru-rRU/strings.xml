@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Калькулятор</string>
-    <string name="error_message">Ошибка!</string>
     <string name="counters">Счёты</string>
+    <string name="error_message">Арифмет.Ошибка!</string>
+    <string name="error_type_mismatch">Ошибка типов</string>
+    <string name="title_menu">Калькулятор</string>
+    <string name="material_light">Светлая тема</string>
+    <string name="material_dark">Тёмная тема</string>
+    <string name="edit_text_title">Выбор темы для калькулятора</string>
+    <string name="button_return_back">Вернуться</string>
+    <string name="choice_theme">Выбор темы</string>
+    <string name="exit_activity">Выход</string>
 </resources>
